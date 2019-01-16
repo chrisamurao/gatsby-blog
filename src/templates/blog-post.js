@@ -1,87 +1,72 @@
 import React from 'react'
-import { Link, graphql } from 'gatsby'
+import Helmet from 'react-helmet'
+import {graphql} from 'gatsby'
+import styled from 'styled-components'
 
-import Bio from '../components/bio'
 import Layout from '../components/layout'
-import SEO from '../components/seo'
-import { rhythm, scale } from '../utils/typography'
 
-class BlogPostTemplate extends React.Component {
-  render() {
-    const post = this.props.data.markdownRemark
-    const siteTitle = this.props.data.site.siteMetadata.title
-    const { previous, next } = this.props.pageContext
+// import '../css/blog-post.css';
 
-    return (
-      <Layout location={this.props.location} title={siteTitle}>
-        <SEO title={post.frontmatter.title} description={post.excerpt} />
-        <h1>{post.frontmatter.title}</h1>
-        <p
-          style={{
-            ...scale(-1 / 5),
-            display: 'block',
-            marginBottom: rhythm(1),
-            marginTop: rhythm(-1),
-          }}
-        >
-          {post.frontmatter.date}
-        </p>
-        <div dangerouslySetInnerHTML={{ __html: post.html }} />
-        <hr
-          style={{
-            marginBottom: rhythm(1),
-          }}
-        />
-        <Bio />
+const BlogTitle = styled.div`
+  color: #394047;
+  font-family: 'Questrial';
+  font-size: 36px;
+  line-height: 44px;
+  margin-bottom: 1.45rem;
+`
 
-        <ul
-          style={{
-            display: 'flex',
-            flexWrap: 'wrap',
-            justifyContent: 'space-between',
-            listStyle: 'none',
-            padding: 0,
-          }}
-        >
-          <li>
-            {
-              previous &&
-              <Link to={previous.fields.slug} rel="prev">
-                ← {previous.frontmatter.title}
-              </Link>
-            }
-          </li>
-          <li>
-            {
-              next &&
-              <Link to={next.fields.slug} rel="next">
-                {next.frontmatter.title} →
-              </Link>
-            }
-          </li>
-        </ul>
-      </Layout>
-    )
+const BlogContent = styled.div`
+  color: #a3a3a3;
+  line-height: 20px;
+  font-size: 15px;
+  font-family: 'Questrial';
+  img {
+    border-radius: 4px;
+    display: block;
+    margin: 10px auto;
+    max-width: 734px;
+    width: 100%;
   }
+`
+
+export default function Template({data}) {
+  const {markdownRemark: post} = data
+  return post ? (
+    <Layout>
+      <div className="blog-post-container">
+        <Helmet title={`Christopher Amurao - ${post.frontmatter.title}`} />
+        <div className="blog-post">
+          <BlogTitle>{post.frontmatter.title}</BlogTitle>
+          <BlogContent
+            className="blog-post-content"
+            dangerouslySetInnerHTML={{__html: post.html}}
+          />
+        </div>
+      </div>
+    </Layout>
+  ) : (
+    <Layout>
+      <div className="blog-post-container">
+        <Helmet title={`Christopher Amurao`} />
+        <div className="blog-post">
+          <h1>Oh No!</h1>
+          <div className="blog-post-content">
+            We could not find the page you are looking for
+          </div>
+        </div>
+      </div>
+    </Layout>
+  )
 }
 
-export default BlogPostTemplate
-
 export const pageQuery = graphql`
-  query BlogPostBySlug($slug: String!) {
-    site {
-      siteMetadata {
-        title
-        author
-      }
-    }
-    markdownRemark(fields: { slug: { eq: $slug } }) {
-      id
-      excerpt(pruneLength: 160)
+  query BlogPostByPath($path: String!) {
+    markdownRemark(frontmatter: {path: {eq: $path}, published: {ne: false}}) {
       html
       frontmatter {
+        date
+        path
         title
-        date(formatString: "MMMM DD, YYYY")
       }
     }
   }

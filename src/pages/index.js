@@ -1,63 +1,352 @@
 import React from 'react'
-import { Link, graphql } from 'gatsby'
+import {graphql, Link, withPrefix} from 'gatsby'
+import kebabCase from 'lodash/kebabcase'
+import styled from 'styled-components'
+import {OutboundLink} from 'gatsby-plugin-google-analytics'
 
-import Bio from '../components/bio'
 import Layout from '../components/layout'
-import SEO from '../components/seo'
-import { rhythm } from '../utils/typography'
+import {LARGER_WORKS} from '../works/larger-works'
 
-class BlogIndex extends React.Component {
+// import '../css/index.css';
+
+const DEFAULT_MARGIN = 30
+const SMALL_THUMBNAIL_HEIGHT = 100
+const SCROLL_BAR_HEIGHT = 20
+
+const BLOCKS_ID = 'blocks'
+const OBSERVABLE_ID = 'observable'
+
+const BlogPreview = styled.div`
+  margin-bottom: ${DEFAULT_MARGIN}px;
+`
+
+const BlogMetadata = styled.div`
+  color: #a3a3a3;
+  display: inline-block;
+  font-size: 12px;
+  margin-bottom: 5px;
+`
+
+const BlogTag = styled(Link)`
+  color: #a3a3a3;
+  display: inline-block;
+  font-size: 12px;
+  padding-right: 10px;
+  transition: color 0.2s ease;
+  &:hover {
+    color: black;
+  }
+`
+
+const MiddleDot = styled.span`
+  font-size: 12px;
+  padding: 0 10px;
+`
+
+const ReadLink = styled(Link)`
+  display: block;
+  font-size: 12px;
+  letter-spacing: 0.05rem;
+  margin-bottom: 60px;
+  margin-top: ${DEFAULT_MARGIN}px;
+`
+
+const WorksSection = styled.div`
+  margin: ${DEFAULT_MARGIN}px 0 60px 0;
+`
+
+const LargerWorksCarousel = styled.div`
+  overflow-x: scroll;
+  -webkit-overflow-scrolling: touch;
+  white-space: nowrap;
+`
+
+const SmallerWorksCarousel = styled.div`
+  overflow-x: scroll;
+  -webkit-overflow-scrolling: touch;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  height: ${SMALL_THUMBNAIL_HEIGHT +
+    2 * (SMALL_THUMBNAIL_HEIGHT + DEFAULT_MARGIN) +
+    SCROLL_BAR_HEIGHT}px;
+  white-space: nowrap;
+`
+
+const LargerWorks = styled.div`
+  display: inline-block;
+  margin-right: ${DEFAULT_MARGIN}px;
+  vertical-align: top;
+  width: 367px;
+`
+
+const SmallerWorks = styled.div`
+  &:not(:nth-child(3n)) {
+    margin-bottom: ${DEFAULT_MARGIN}px;
+  }
+  margin-right: ${DEFAULT_MARGIN}px;
+  display: inline-block;
+`
+
+const SmallerWorkImage = styled.img`
+  margin-left: -5px;
+  margin-top: ${props => (props.workType === OBSERVABLE_ID ? '-8px' : '0')};
+  height: ${props => (props.workType === OBSERVABLE_ID ? '120px' : '100px')};
+`
+
+const Thumbnail = styled.div`
+  background-color: #b2c5d4;
+  border-radius: 4px;
+  height: ${props =>
+    props.size === 'larger' ? '200px' : `${SMALL_THUMBNAIL_HEIGHT}px`};
+  overflow: hidden;
+  width: ${props => (props.size === 'larger' ? '367px' : '184px')};
+`
+
+const ThumbnailImage = styled.img`
+  width: ${props => (props.size === 'larger' ? '367px' : '184px')};
+`
+
+const WorkDetails = styled.div`
+  padding: ${DEFAULT_MARGIN}px;
+`
+
+const WorkTitle = styled(OutboundLink)`
+  color: black;
+  display: block;
+  margin-bottom: ${DEFAULT_MARGIN}px;
+`
+
+const WorkTitleLink = styled(Link)`
+  color: black;
+  display: block;
+  margin-bottom: ${DEFAULT_MARGIN}px;
+`
+
+const WorkDescription = styled.div`
+  color: #a3a3a3;
+  font-size: 12px;
+  white-space: normal;
+`
+
+const Tabs = styled.ul`
+  margin-left: 0;
+  margin-bottom: ${DEFAULT_MARGIN}px;
+`
+
+const Tab = styled.li`
+  color: ${props => (props.selected ? 'black' : '#A3A3A3')};
+  cursor: pointer;
+  display: inline-block;
+  font-size: 14px;
+  margin-right: ${DEFAULT_MARGIN}px;
+  min-width: ${DEFAULT_MARGIN}px;
+  transition: color 0.2s ease;
+  &:hover {
+    color: black;
+  }
+`
+
+function formatData(ts) {
+  const date = new Date(Number(ts))
+  const month = date.getMonth()
+  const monthIndexToMonthText = [
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
+  ]
+  return monthIndexToMonthText[month] + ' ' + date.getFullYear()
+}
+
+export default class Index extends React.Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      selectedSmallerWorkType: 'all',
+      selectedWrittenWorkTag: 'all',
+    }
+  }
+
+  _filterSmallerWork(workType) {
+    this.setState({selectedSmallerWorkType: workType})
+  }
+
+  _filterWrittenWork(tag) {
+    this.setState({selectedWrittenWorkTag: tag})
+  }
+
   render() {
-    const { data } = this.props;
-    const siteTitle = data.site.siteMetadata.title
-    const posts = data.allMarkdownRemark.edges
-
+    const {selectedSmallerWorkType, selectedWrittenWorkTag} = this.state
+    const {data, pageContext} = this.props
+    const {edges: posts} = data.allMarkdownRemark
+    const {smallerWorks} = pageContext
     return (
-      <Layout location={this.props.location} title={siteTitle}>
-        <SEO title="All posts" keywords={['blog', 'gatsby', 'javascript', 'react']} />
-        <Bio />
-        {posts.map(({ node }) => {
-          const title = node.frontmatter.title || node.fields.slug
-          return (
-            <div key={node.fields.slug}>
-              <h3
-                style={{
-                  marginBottom: rhythm(1 / 4),
-                }}
+      <Layout>
+        <WorksSection>
+          <h2> Projects </h2>
+          <LargerWorksCarousel>
+            {LARGER_WORKS.sort((a, b) => b.createdAt - a.createdAt).map(
+              work => (
+                <LargerWorks key={work.url}>
+                  <Thumbnail size={'larger'}>
+                    <OutboundLink
+                      href={work.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <ThumbnailImage
+                        alt={work.title}
+                        size={'larger'}
+                        src={withPrefix(work.thumbnail)}
+                      />
+                    </OutboundLink>
+                  </Thumbnail>
+                  <WorkDetails>
+                    <BlogMetadata>{formatData(work.createdAt)}</BlogMetadata>
+                    <WorkTitle
+                      href={work.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {work.title}
+                    </WorkTitle>
+                    <WorkDescription>{work.description}</WorkDescription>
+                  </WorkDetails>
+                </LargerWorks>
+              )
+            )}
+          </LargerWorksCarousel>
+        </WorksSection>
+
+        <WorksSection>
+          <h2>Graphics & Visualization</h2>
+          <Tabs>
+            {[
+              {id: 'all', text: 'All Sources'},
+              {id: BLOCKS_ID, text: 'Bl.ocks'},
+              {id: OBSERVABLE_ID, text: 'Observable'},
+            ].map(tab => (
+              <Tab
+                key={tab.id}
+                selected={tab.id === selectedSmallerWorkType}
+                onClick={() => this._filterSmallerWork(tab.id)}
               >
-                <Link style={{ boxShadow: 'none' }} to={node.fields.slug}>
-                  {title}
-                </Link>
-              </h3>
-              <small>{node.frontmatter.date}</small>
-              <p dangerouslySetInnerHTML={{ __html: node.excerpt }} />
-            </div>
-          )
-        })}
+                {tab.text}
+              </Tab>
+            ))}
+          </Tabs>
+          <SmallerWorksCarousel>
+            {smallerWorks
+              .filter(
+                smallerWork =>
+                  selectedSmallerWorkType === 'all' ||
+                  smallerWork.workType === selectedSmallerWorkType
+              )
+              .map((smallerWork, i) => (
+                <SmallerWorks key={i}>
+                  <Thumbnail size={'smaller'}>
+                    <OutboundLink
+                      href={smallerWork.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <SmallerWorkImage
+                        alt={smallerWork.alt}
+                        src={smallerWork.imgUrl}
+                        workType={smallerWork.workType}
+                      />
+                    </OutboundLink>
+                  </Thumbnail>
+                </SmallerWorks>
+              ))}
+          </SmallerWorksCarousel>
+        </WorksSection>
+
+        <WorksSection>
+          <h2>Posts</h2>
+          <Tabs>
+            {/*
+              TODO: Make this generative so that adding a new tag updates this list automatically
+            */}
+            {[
+              {id: 'all', text: 'All Tags'},
+              {id: 'API', text: 'API'},
+              {id: 'D3.js', text: 'D3.js'},
+              {id: 'JavaScript', text: 'JavaScript'},
+              {id: 'jQuery', text: 'jQuery'},
+              {id: 'MongoDB', text: 'MongoDB'},
+              {id: 'UX / UI', text: 'UX / UI'},
+              {id: 'Security', text: 'Security'},
+            ].map(tab => (
+              <Tab
+                key={tab.id}
+                selected={tab.id === selectedWrittenWorkTag}
+                onClick={() => this._filterWrittenWork(tab.id)}
+              >
+                {tab.text}
+              </Tab>
+            ))}
+          </Tabs>
+          <div className="blog-posts">
+            {posts
+              .filter(post => post.node.frontmatter.title.length > 0)
+              .filter(
+                post =>
+                  selectedWrittenWorkTag === 'all' ||
+                  post.node.frontmatter.tags.includes(selectedWrittenWorkTag)
+              )
+              .map(({node: post}) => {
+                return (
+                  <BlogPreview key={post.id}>
+                    <BlogMetadata>
+                      {formatData(post.frontmatter.date)}
+                      <MiddleDot>/</MiddleDot>
+                      {post.frontmatter.tags.map(tag => (
+                        <BlogTag to={`/tags/${kebabCase(tag)}`} key={tag}>
+                          {tag}
+                        </BlogTag>
+                      ))}
+                    </BlogMetadata>
+                    <WorkTitleLink to={post.frontmatter.path}>
+                      {post.frontmatter.title}
+                    </WorkTitleLink>
+                    <p>{post.excerpt}</p>
+                    <ReadLink to={post.frontmatter.path}>Read</ReadLink>
+                  </BlogPreview>
+                )
+              })}
+            <BlogTag to="/tags/">See all tags</BlogTag>
+          </div>
+        </WorksSection>
       </Layout>
     )
   }
 }
 
-export default BlogIndex
-
 export const pageQuery = graphql`
-  query {
-    site {
-      siteMetadata {
-        title
-      }
-    }
-    allMarkdownRemark(sort: { fields: [frontmatter___date], order: DESC }) {
+  query IndexQuery {
+    allMarkdownRemark(
+      filter: {frontmatter: {published: {ne: false}}}
+      sort: {order: DESC, fields: [frontmatter___date]}
+    ) {
       edges {
         node {
-          excerpt
-          fields {
-            slug
-          }
+          excerpt(pruneLength: 250)
+          id
           frontmatter {
-            date(formatString: "MMMM DD, YYYY")
             title
+            date
+            tags
+            path
           }
         }
       }

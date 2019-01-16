@@ -1,18 +1,19 @@
 import React from 'react'
+import styled from 'styled-components'
 
 import Layout from '../components/layout'
-import SEO from '../components/seo'
 
-class NotFoundPage extends React.Component {
-  render() {
-    return (
-      <Layout location={this.props.location}>
-        <SEO title="404: Not Found" />
-        <h1>Not Found</h1>
-        <p>You just hit a route that doesn&#39;t exist... the sadness.</p>
-      </Layout>
-    )
-  }
-}
+const PageContainer = styled.div`
+  margin: 30px 0 60px 0;
+`
+
+const NotFoundPage = () => (
+  <Layout>
+    <PageContainer>
+      <h2>NOT FOUND</h2>
+      <p>You just hit a route that doesn&#39;t exist... the sadness.</p>
+    </PageContainer>
+  </Layout>
+)
 
 export default NotFoundPage
