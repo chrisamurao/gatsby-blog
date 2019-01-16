@@ -3,7 +3,7 @@ import React from 'react'
 import styled from 'styled-components'
 
 // Utilities
-import kebabCase from 'lodash/kebabcase'
+// import kebabCase from 'lodash/kebabcase'
 
 // Components
 import Helmet from 'react-helmet'
@@ -38,7 +38,7 @@ const TagsPage = ({
       <Helmet title={title} />
       <div>
         <h2>Tags</h2>
-        <ul>
+        {/* <ul>
           {group
             .sort((a, b) => b.totalCount - a.totalCount)
             .map(tag => (
@@ -50,7 +50,7 @@ const TagsPage = ({
                 </Link>
               </Tag>
             ))}
-        </ul>
+        </ul> */}
       </div>
     </PageContainer>
   </Layout>

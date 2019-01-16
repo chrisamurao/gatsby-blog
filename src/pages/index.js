@@ -1,6 +1,6 @@
 import React from 'react'
 import {graphql, Link, withPrefix} from 'gatsby'
-import kebabCase from 'lodash/kebabcase'
+// import kebabCase from 'lodash/kebabcase'
 import styled from 'styled-components'
 import {OutboundLink} from 'gatsby-plugin-google-analytics'
 
@@ -311,7 +311,8 @@ export default class Index extends React.Component {
                       {formatData(post.frontmatter.date)}
                       <MiddleDot>/</MiddleDot>
                       {post.frontmatter.tags.map(tag => (
-                        <BlogTag to={`/tags/${kebabCase(tag)}`} key={tag}>
+                        // <BlogTag to={`/tags/${kebabCase(tag)}`} key={tag}>
+                        <BlogTag to={`/tags/${tag}`} key={tag}>
                           {tag}
                         </BlogTag>
                       ))}
