@@ -167,7 +167,7 @@ const Header = () => (
           </Link>
         </About>
         {TwitterIcon()}
-        {ObservableIcon()}
+        {/* {ObservableIcon()} */}
         {GithubIcon()}
         {LinkedInIcon()}
       </SocialIcons>
