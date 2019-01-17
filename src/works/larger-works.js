@@ -1,61 +1,49 @@
 export const LARGER_WORKS = [
   {
-    createdAt: 1544515200000,
-    description: 'Lorem Ipsum',
+    createdAt: 1536754880000,
+    description: 'Plan games and events with people near you!',
     title: 'Pop-A-Game',
-    thumbnail: '/img/thumbnails/steel-explorer.png',
-    url: '',
-  },
+    thumbnail: '/img/thumbnails/pop-a-game.jpg',
+    url: 'http://pop-a-game.herokuapp.com/home',
+  }, // {
+  //   createdAt: 1525590000000,
+  //   description:
+  //     'A realtime visualization using client-side audio / video stream APIs and rendered to canvas at 64fps',
+  //   title: 'Jeopardy Trainer',
+  //   thumbnail: '/img/thumbnails/live-light.gif',
+  //   url: '',
+  // },
   {
-    createdAt: 1525590000000,
-    description:
-      'A realtime visualization using client-side audio / video stream APIs and rendered to canvas at 64fps',
-    title: 'Jeopardy Trainer',
-    thumbnail: '/img/thumbnails/live-light.gif',
-    url: '',
-  },
-  {
-    createdAt: 1472713200000,
-    description:
-      'Randomly generated bingo board generator to play along with during the Apple keynote event',
-    thumbnail: '/img/thumbnails/apple-keynote-bingo.png',
+    createdAt: 1537705280000,
+    description: 'React Native Mobile App for coping with anxiety',
+    thumbnail: '/img/thumbnails/ext2.jpg',
     title: 'Haven',
     url: '',
   },
   {
-    collaborators: [
-      {
-        link: '',
-        name: '',
-      },
-    ],
-    createdAt: 1418457600000,
+    collaborators: [{link: '', name: ''}],
+    createdAt: 1533126080000,
     cta: 'Explore Data',
-    description: 'Visualizing pricing information retrieved from Uber',
-    thumbnail: '/img/thumbnails/uber-analytics.png',
+    description: 'Find and contact your local elected representatives',
+    thumbnail: '/img/thumbnails/imperio.jpg',
     title: 'Imperio',
-    url: '',
+    url: 'http://imperio-rubeus.herokuapp.com/',
   },
   {
-    collaborators: [
-      {
-        link: '',
-        name: '',
-      },
-    ],
-    createdAt: 1407481200000,
+    collaborators: [{link: '', name: ''}],
+    createdAt: 1531743680000,
     cta: '',
     description: 'Cool dogs BRO!',
-    thumbnail: '/img/thumbnails/watchout.png',
+    thumbnail: '/img/thumbnails/ARFanet.jpg',
     title: 'ARFanet',
-    url: '',
-  },
-  {
-    createdAt: 1448784000000,
-    cta: 'Compare yours',
-    description: 'Polyglot',
-    thumbnail: '/img/thumbnails/income-analyzer.png',
-    title: 'Polyglot',
-    url: '',
+    url: 'http://arfanet.herokuapp.com/',
   },
 ]
+// {
+//   createdAt: 1448784000000,
+//   cta: 'Compare yours',
+//   description: 'Polyglot',
+//   thumbnail: '/img/thumbnails/income-analyzer.png',
+//   title: 'Polyglot',
+//   url: '',
+// },
